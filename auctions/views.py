@@ -15,7 +15,6 @@ def index(request):
 
 def login_view(request):
     if request.method == "POST":
-
         # Attempt to sign user in
         username = request.POST["username"]
         password = request.POST["password"]
@@ -73,6 +72,22 @@ def createListing(request, username):
         messages.error(request, "You do not have access to this page!", extra_tags="danger")
         return HttpResponseRedirect(reverse("index"))
 
+    if request.method == "POST":
+        title = request.POST["title"]
+        description = request.POST["description"]
+        startingBid = int(request.POST["startingBid"])
+        image = request.POST["image"]
+
+        listing = AuctionListing(
+            title=title,
+            description=description,
+            startingBid=startingBid,
+            url=image,
+            creator=request.user,
+        )
+        listing.save()
+        return HttpResponseRedirect(reverse("index"))
+
     return render(request, "auctions/createListing.html")
 
 
@@ -91,3 +106,4 @@ def watchlist(request, username):
 
 def categoryView(request):
     return render(request, "auctions/category.html")
+

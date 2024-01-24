@@ -1,3 +1,12 @@
 body {
     padding: 10px;
 }
+.nav-item > a {
+    text-decoration: none;
+}
+.nav-item > *{
+    color : white;
+}
+.nav-item > a:hover {
+    color : #cccccc;
+}

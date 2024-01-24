@@ -1,5 +1,13 @@
 {% load static %}
 
+{% url 'category' as url_category %}
+{% url 'index' as url_index %}
+{% url 'login' as url_login %}
+{% url 'register' as url_register %}
+{% url 'create' username=user.username as url_create %}
+{% url 'watchlist' username=user.username as url_watchlist %}
+
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -9,31 +17,67 @@
     </head>
     <body>
         <h1>Auctions</h1>
-        <div>
+
+        <div class="navbar navbar-expand-sm navbar-dark bg-dark fixed-top">
+            <div class="nav-item">
+                <a class="nav-link {% if request.path == url_index %}bg-primary text-white rounded{% endif %}" href="{% url 'index' %}">
+                    Active Listings
+                </a>
+            </div>
             {% if user.is_authenticated %}
-                Signed in as <strong>{{ user.username }}</strong>.
+                <div class="nav-item">
+                    <a class="nav-link {% if request.path == url_create %}bg-primary text-white rounded{% endif %}" href="{% url 'create' username=user.username %}">
+                        Create Listing
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a class="nav-link {% if request.path == url_watchlist %}bg-primary text-white rounded{% endif %}" href="{% url 'watchlist' username=user.username %}">
+                        Watchlist
+                    </a>
+                </div>
             {% else %}
-                Not signed in.
+                <div class="nav-item">
+                    <a class="nav-link {% if request.path == url_create %}bg-primary text-white rounded{% endif %}" href="{% url 'login' %}">
+                        Create Listing
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a class="nav-link {% if request.path == url_watchlist %}bg-primary text-white rounded{% endif %}" href="{% url 'login' %}">
+                        Watchlist
+                    </a>
+                </div>
+            {% endif %}
+            <div class="nav-item">
+                <a class="nav-link {% if request.path == url_category %}bg-primary text-white rounded{% endif %}" href="{% url 'category' %}">
+                    Categories
+                </a>
+            </div>
+            <div class="nav-item navbar-text ml-auto mr-3">
+                {% if user.is_authenticated %}
+                    Hello, <strong>{{ user.username }}</strong>.
+                {% else %}
+                    Not signed in
+                {% endif %}
+            </div>
+            {% if user.is_authenticated %}
+                <div class="nav-item">
+                    <a class="nav-link" href="{% url 'logout' %}">
+                        Log Out
+                    </a>
+                </div>
+            {% else %}
+                <div class="nav-item">
+                    <a class="nav-link {% if request.path == url_login %}bg-primary text-white rounded{% endif %}" href="{% url 'login' %}">
+                        Log In
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a class="nav-link {% if request.path == url_register %}bg-primary text-white rounded{% endif %}" href="{% url 'register' %}">
+                        Register
+                    </a>
+                </div>
             {% endif %}
         </div>
-        <ul class="nav">
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'index' %}">Active Listings</a>
-            </li>
-            {% if user.is_authenticated %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
-                </li>
-            {% else %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'login' %}">Log In</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'register' %}">Register</a>
-                </li>
-            {% endif %}
-        </ul>
-        <hr>
         {% block body %}
         {% endblock %}
     </body>

@@ -1,12 +1,11 @@
 {% extends "auctions/layout.html" %}
-
 {% block body %}
     <h1>Active Listings</h1>
     <hr>
 
     {% for listing in AuctionListings %}
         <div class="card" style="width: 18rem;">
-            <img class="card-img-top" src={{ listing.url }} alt="Card image cap">
+            <img class="card-img-top" alt="Image for listing" src={{ listing.url }}>
             <div class="card-body">
                 <h5 class="card-title">{{ listing.title }}</h5>
                 <p class="card-text">{{ listing.description }}</p>

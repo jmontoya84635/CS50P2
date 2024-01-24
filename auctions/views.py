@@ -4,6 +4,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from .models import User, AuctionListing
+from django.contrib import messages
 
 
 def index(request):
@@ -66,8 +67,10 @@ def register(request):
 
 def createListing(request, username):
     if not request.user.is_authenticated:
+        messages.error(request, "You are not signed in!")
         return HttpResponseRedirect(reverse("login"))
     if request.user.username != username:
+        messages.error(request, "You do not have access to this page!", extra_tags="danger")
         return HttpResponseRedirect(reverse("index"))
 
     return render(request, "auctions/createListing.html")
@@ -75,9 +78,13 @@ def createListing(request, username):
 
 def watchlist(request, username):
     if not request.user.is_authenticated:
-        return HttpResponseRedirect(reverse("login"))
+        return HttpResponseRedirect(reverse("login"), {
+            "alert": "You are not logged in"
+        })
     if request.user.username != username:
-        return HttpResponseRedirect(reverse("index"))
+        return HttpResponseRedirect(reverse("index"), {
+            "alert": True,
+        })
 
     return render(request, "auctions/watchlist.html")
 

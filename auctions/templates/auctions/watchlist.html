@@ -1,8 +1,30 @@
 {% extends "auctions/layout.html" %}
-
+{% load static %}
 {% block body %}
     <h1>Watchlist</h1>
     <hr>
-    todo: create page
-{#    todo: create page#}
+    <div class="main-page-flex-container">
+        {% for listing in listings %}
+            <div class="auction-listing-card card row-space">
+                {% if listing.url == "" %}
+                    <img class="card-img-top" alt="Image for listing" src="{% static 'auctions/no-image.png' %}">
+                {% else %}
+                    <img class="card-img-top" alt="Image for listing" src={{ listing.url }}>
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title card-overflow">{{ listing.title }}</h5>
+                    <p class="card-text card-overflow">{{ listing.description }}</p>
+                    <p> Created by {{ listing.creator.username }} on {{ listing.createdAt }}</p>
+                    <a href="{% url 'listingView' listingId=listing.id %}" class="btn btn-primary mr-3">Make a bid of ${{ listing.startingBid }}!</a>
+                </div>
+            </div>
+            {% empty %}
+            <h2>No active listings in watchlist</h2>
+        {% endfor %}
+    </div>
+    <br>
+    <hr>
+    <br>
+    <h3 class="text-center">End of results</h3>
+    <br>
 {% endblock %}

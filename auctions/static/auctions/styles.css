@@ -40,23 +40,23 @@ body {
 .view-page-flex-container {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-around;
+    justify-items: center;
+    align-items: flex-start;
 }
 .view-page-child > *{
-    margin: 10px;
     min-width: 300px;
-    max-width: 600px;
+    max-width: 500px;
+    border-radius: 15px;
 }
 .view-page-child > img {
     flex-grow: 0;
-    max-width: 100%;
+    object-fit: cover;
+    width: 100%;
+    height: auto;
 }
 .description {
     flex-grow: 1;
-    border: blue 1px solid;
-    background: grey;
-}
-.description > * {
-    margin: 30%;
-    text-align: center;
+    height: auto;
+    border-radius: 15px;
+    width: auto;
 }

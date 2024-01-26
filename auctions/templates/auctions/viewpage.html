@@ -1,14 +1,62 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h1 class="mr-auto">{{ listing.title }}</h1>
+    <div style="display: flex; align-items: center">
+        <h1 class="mr-auto">{{ listing.title }}</h1>
+        {% if user.is_authenticated %}
+            {% if user.username == listing.creator.username %}
+                <a href="#" class="btn btn-danger mr-4">Close Listing</a>
+            {% endif %}
+            {% if isAlreadyIn %}
+                <form action="{% url 'listingView' listing.id %}" method="">
+                {% csrf_token %}
+                    <input type="submit" class="btn btn-danger" value="Remove from watchlist">
+                </form>
+            {% else %}
+                <form action="{% url 'listingView' listing.id %}" method="post">
+                {% csrf_token %}
+                <input type="submit" class="btn btn-primary" value="Save to watchlist">
+                </form>
+            {% endif %}
+        {% endif %}
+    </div>
     <hr>
-    <div class="view-page-flex-container">
-        <div class="view-page-child">
-            <img src={{ listing.url }}>
+    <div class="view-page-flex-container mx-auto">
+        <div class="view-page-child mr-3 ml-5">
+            <img class="img-thumbnail rounded-5" src="{{ listing.url }}" alt="Image for listing">
         </div>
-        <div class="view-page-child">
+        <br>
+        <div class="card view-page-child description mr-5">
+            <div class="card-body">
+                <h5 class="card-title">Description</h5>
+                <p class="card-text">{{ listing.description }}</p>
+                <br>
+                <div style="display: flex">
+                    <h5 class="card-title">Current Bid:</h5>
+                    <h5 style="color: green"><strong> ${{ listing.startingBid }}</strong></h5>
+                </div>
+                <br>
+                <hr>
+                <br>
+                <h5 class="card-text">Make a bid:</h5>
+                <br>
+                {% if user.is_authenticated %}
+                    <div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">$</span>
+                            <input type="text" class="form-control" placeholder="{{ listing.startingBid }}" aria-label="Amount (to the nearest dollar)">
+                            <span class="input-group-text">.00</span>
+                            <input type="submit" class="btn btn-primary">
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="alert alert-warning" role="alert">
+                        You must be logged in to bid!
+                    </div>
+                {% endif %}
 
+
+            </div>
         </div>
     </div>
 

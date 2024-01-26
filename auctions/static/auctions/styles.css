@@ -1,6 +1,7 @@
 body {
     padding: 10px;
 }
+/* Navbar */
 .nav-item > a {
     text-decoration: none;
 }
@@ -10,17 +11,19 @@ body {
 .nav-item > a:hover {
     color : #cccccc;
 }
-.flex-container {
+/* Inside the main page */
+.main-page-flex-container {
     display: flex;
     flex-wrap: wrap;
     flex-direction: row;
+    justify-content: space-around;
 }
-.card .card-img-top {
+.auction-listing-card .card-img-top {
     max-width: 100%;
     max-height: 200px;
     object-fit: cover;
 }
-.card {
+.auction-listing-card {
     width: 18rem;
 }
 .card-overflow {
@@ -29,5 +32,31 @@ body {
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
-
+}
+.row-space{
+    margin-bottom: 10px;
+}
+/* Inside the listing page */
+.view-page-flex-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+.view-page-child > *{
+    margin: 10px;
+    min-width: 300px;
+    max-width: 600px;
+}
+.view-page-child > img {
+    flex-grow: 0;
+    max-width: 100%;
+}
+.description {
+    flex-grow: 1;
+    border: blue 1px solid;
+    background: grey;
+}
+.description > * {
+    margin: 30%;
+    text-align: center;
 }

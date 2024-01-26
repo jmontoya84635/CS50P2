@@ -107,3 +107,9 @@ def watchlist(request, username):
 def categoryView(request):
     return render(request, "auctions/category.html")
 
+
+def listingView(request, listingId):
+    listing = AuctionListing.objects.get(pk=listingId)
+    return render(request, "auctions/viewpage.html", {
+        "listing": listing,
+    })

@@ -172,6 +172,20 @@ def listingView(request, listingId):
                     listing=listing,
                 )
                 currComment.save()
+        elif postType == "Close Listing":
+            if request.user.is_authenticated:
+                listing = AuctionListing.objects.get(pk=listingId)
+                listing.active = False
+                bids = listing.bids.all()
+                highestBid = listing.startingBid
+                for bid in bids:
+                    if bid.amount >= highestBid:
+                        currBid = bid
+                if currBid.bidder is None:
+                    currBid.bidder = "No one has won this auction"
+                else:
+                    listing.winner = currBid.bidder
+                listing.save()
 
     listing = AuctionListing.objects.get(pk=listingId)
     bids = listing.bids.all()

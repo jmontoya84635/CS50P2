@@ -5,7 +5,18 @@
         <h1 class="mr-auto">{{ listing.title }}</h1>
         {% if user.is_authenticated %}
             {% if user.username == listing.creator.username %}
-                <a href="#" class="btn btn-danger mr-4">Close Listing</a>
+                <div class="mr-4">
+                {% if listing.active %}
+                    <form action="{% url 'listingView' listing.id %}" method="post">
+                        {% csrf_token %}
+                        <input type="submit" class="btn btn-danger" name="func" value="Close Listing">
+                    </form>
+
+                {% endif %}
+                </div>
+            {% endif %}
+            {% if not listing.active %}
+                <h1 class="mr-auto" style="color: red">This Auction is Closed</h1>
             {% endif %}
             {% if isAlreadyIn %}
                 <form action="{% url 'listingView' listing.id %}" method="post">
@@ -37,32 +48,37 @@
                         <h5 style="color: green"><strong> ${{ listing.startingBid }}</strong></h5>
                     </div>
                     <hr>
-                    <h3 class="card-text">Make a bid:</h3>
-                    {% if user.is_authenticated %}
-                        <div>
-                            <div class="input-group mb-3">
-                                <form action="{% url 'listingView' listing.id %}" method="post" style="display: flex">
-                                    {% csrf_token %}
-                                    <span class="input-group-text">$</span>
-                                    <input type="number" class="form-control" name="amount"  value= {{ listing.startingBid|add:"1" }} min="{{ listing.startingBid|add:"1" }}" aria-label="Amount (to the nearest dollar)">
-                                    <span class="input-group-text">.00</span>
-                                    <input type="submit" name="func" value="Bid" class="btn btn-primary">
-                                </form>
+                    {% if listing.active %}
+                        <h3 class="card-text">Make a bid:</h3>
+                        {% if user.is_authenticated %}
+                            <div>
+                                <div class="input-group mb-3">
+                                    <form action="{% url 'listingView' listing.id %}" method="post" style="display: flex">
+                                        {% csrf_token %}
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" class="form-control" name="amount"  value= {{ listing.startingBid|add:"1" }} min="{{ listing.startingBid|add:"1" }}" aria-label="Amount (to the nearest dollar)">
+                                        <span class="input-group-text">.00</span>
+                                        <input type="submit" name="func" value="Bid" class="btn btn-primary">
+                                    </form>
+                                </div>
                             </div>
-                        </div>
+                        {% else %}
+                            <div class="alert alert-warning" role="alert">
+                                You must be logged in to bid!
+                            </div>
+                        {% endif %}
+                        <h5>Current Bids ({{ bidNum }})</h5>
+                        <ul>
+                            {% for bid in bids %}
+                                <li>{{ bid.bidder.username }}, bid ${{ bid.amount }}</li>
+                                {% empty %}
+                                <p>No bids yet!</p>
+                            {% endfor %}
+                        </ul>
                     {% else %}
-                        <div class="alert alert-warning" role="alert">
-                            You must be logged in to bid!
-                        </div>
+                        <h2 class="card-text" style="color: red">This listing is closed!</h2><br>
+                        <h3 class="card-text"><strong style="color: dodgerblue">{{ listing.winner }}</strong> won this auction with a bid of ${{ listing.startingBid }}</h3>
                     {% endif %}
-                    <h5>Current Bids ({{ bidNum }})</h5>
-                    <ul>
-                        {% for bid in bids %}
-                            <li>{{ bid.bidder.username }}, bid ${{ bid.amount }}</li>
-                        {% empty %}
-                            <p>No bids yet!</p>
-                        {% endfor %}
-                    </ul>
                 </div>
             </div>
             <br>

@@ -5,7 +5,7 @@
     <hr>
     <div class="main-page-flex-container">
         {% for listing in AuctionListings %}
-            <div class="auction-listing-card card row-space">
+            <div class="auction-listing-card card row-space {% if not listing.active %} greyed-out {% endif %}">
                 {% if listing.url == "" %}
                     <img class="card-img-top" alt="Image for listing" src="{% static 'auctions/no-image.png' %}">
                 {% else %}
@@ -15,7 +15,11 @@
                     <h5 class="card-title card-overflow">{{ listing.title }}</h5>
                     <p class="card-text card-overflow">{{ listing.description }}</p>
                     <p> Created by {{ listing.creator.username }} on {{ listing.createdAt }}</p>
-                    <a href="{% url 'listingView' listingId=listing.id %}" class="btn btn-primary mr-3">Make a bid of ${{ listing.startingBid }}!</a>
+                    {% if listing.active %}
+                        <a href="{% url 'listingView' listingId=listing.id %}" class="btn btn-primary mr-3">Make a bid of ${{ listing.startingBid }}!</a>
+                    {% else %}
+                        <a href="{% url 'listingView' listingId=listing.id %}" class="btn btn-danger mr-3">This auction is closed</a>
+                    {% endif %}
                 </div>
             </div>
         {% empty %}

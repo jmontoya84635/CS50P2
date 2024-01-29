@@ -3,7 +3,7 @@ from django.db import IntegrityError
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-from .models import User, AuctionListing
+from .models import User, AuctionListing, Bid
 from django.contrib import messages
 
 
@@ -90,12 +90,10 @@ def createListing(request, username):
 
 def watchlist(request, username):
     if not request.user.is_authenticated:
-        messages.error(request, "You need to log in to create a listing", extra_tags="danger")
+        messages.warning(request, "You need to log in to see your watch list")
         return HttpResponseRedirect(reverse("login"))
     if request.user.username != username:
-        return HttpResponseRedirect(reverse("index"), {
-            "alert": True,
-        })
+        return HttpResponseRedirect(reverse("index"))
     return render(request, "auctions/watchlist.html", {
         "listings": request.user.watchlistItems.all(),
     })
@@ -107,25 +105,54 @@ def categoryView(request):
 
 def listingView(request, listingId):
     isAlreadyIn = False
-    watchlist_list = request.user.watchlistItems.all()
-    currListing = AuctionListing.objects.get(pk=listingId)
-    if currListing in watchlist_list:
-        isAlreadyIn = True
-    for item in watchlist_list:
-        print(item)
+    if request.user.is_authenticated:
+        watchlist_list = request.user.watchlistItems.all()
+        currListing = AuctionListing.objects.get(pk=listingId)
+        if currListing in watchlist_list:
+            isAlreadyIn = True
     if request.method == "POST":
-        if request.user.is_authenticated:
-            listing = AuctionListing.objects.get(pk=listingId)
-            listing.users_watching.add(request.user)
-            listing.save()
-            messages.success(request, "Saved item to your watchlist")
-            return HttpResponseRedirect(reverse("listingView", kwargs={
-                'listingId': listingId,
-            }))
+        postType = request.POST["func"]
+        if postType == "Save to watchlist":
+            if request.user.is_authenticated:
+                listing = AuctionListing.objects.get(pk=listingId)
+                listing.users_watching.add(request.user)
+                listing.save()
+                messages.success(request, "Saved item to your watchlist")
+                return HttpResponseRedirect(reverse("listingView", kwargs={
+                    'listingId': listingId,
+                }))
+        elif postType == "Remove from watchlist":
+            if request.user.is_authenticated:
+                listing = AuctionListing.objects.get(pk=listingId)
+                listing.users_watching.remove(request.user)
+                listing.save()
+                messages.success(request, "Removed item from your watchlist")
+                return HttpResponseRedirect(reverse("listingView", kwargs={
+                    'listingId': listingId,
+                }))
+        elif postType == "Bid":
+            if request.user.is_authenticated:
+                listing = AuctionListing.objects.get(pk=listingId)
+                if int(request.POST["amount"]) > listing.startingBid:
+                    currBid = Bid(
+                        amount=int(request.POST["amount"]),
+                        bidder=request.user,
+                    )
+                    currBid.save()
+                    listing.startingBid = int(request.POST["amount"])
+                    listing.save()
+                    messages.success(request, "Sent Bid!")
+                else:
+                    messages.error(request, "Current bid is higher than that", extra_tags="danger")
+                return HttpResponseRedirect(reverse("listingView", kwargs={
+                    "listingId": listingId,
+                }))
 
     listing = AuctionListing.objects.get(pk=listingId)
-
+    bids = listing.bids.all()
     return render(request, "auctions/viewpage.html", {
         "listing": listing,
         "isAlreadyIn": isAlreadyIn,
+        "bidNum": len(bids),
+        "bids": bids,
     })

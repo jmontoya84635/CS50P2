@@ -8,14 +8,14 @@
                 <a href="#" class="btn btn-danger mr-4">Close Listing</a>
             {% endif %}
             {% if isAlreadyIn %}
-                <form action="{% url 'listingView' listing.id %}" method="">
+                <form action="{% url 'listingView' listing.id %}" method="post">
                 {% csrf_token %}
-                    <input type="submit" class="btn btn-danger" value="Remove from watchlist">
+                    <input type="submit" class="btn btn-danger" name="func" value="Remove from watchlist">
                 </form>
             {% else %}
                 <form action="{% url 'listingView' listing.id %}" method="post">
                 {% csrf_token %}
-                <input type="submit" class="btn btn-primary" value="Save to watchlist">
+                <input type="submit" class="btn btn-primary" name="func" value="Save to watchlist">
                 </form>
             {% endif %}
         {% endif %}
@@ -43,10 +43,13 @@
                 {% if user.is_authenticated %}
                     <div>
                         <div class="input-group mb-3">
-                            <span class="input-group-text">$</span>
-                            <input type="text" class="form-control" placeholder="{{ listing.startingBid }}" aria-label="Amount (to the nearest dollar)">
-                            <span class="input-group-text">.00</span>
-                            <input type="submit" class="btn btn-primary">
+                            <form action="{% url 'listingView' listing.id %}" method="post" style="display: flex">
+                                {% csrf_token %}
+                                <span class="input-group-text">$</span>
+                                <input type="number" class="form-control" name="amount"  value= {{ listing.startingBid|add:"1" }} min="{{ listing.startingBid|add:"1" }}" aria-label="Amount (to the nearest dollar)">
+                                <span class="input-group-text">.00</span>
+                                <input type="submit" name="func" value="Bid" class="btn btn-primary">
+                            </form>
                         </div>
                     </div>
                 {% else %}
@@ -54,6 +57,15 @@
                         You must be logged in to bid!
                     </div>
                 {% endif %}
+                <br>
+                <h3>Current Bids ({{ bidNum }})</h3>
+                <br>
+                {% for bid in bids %}
+                    bid: {{ bid.amount }} by {{ bid.bidder.username }}
+                <br>
+                    {% empty %}
+                    <p>No bids yet!</p>
+                {% endfor %}
 
 
             </div>

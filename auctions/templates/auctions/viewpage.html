@@ -26,54 +26,86 @@
             <img class="img-thumbnail rounded-5" src="{{ listing.url }}" alt="Image for listing">
         </div>
         <br>
-        <div class="card view-page-child description mr-5">
-            <div class="card-body">
-                <h5 class="card-title">Description</h5>
-                <p class="card-text">{{ listing.description }}</p>
-                <br>
-                <div style="display: flex">
-                    <h5 class="card-title">Current Bid:</h5>
-                    <h5 style="color: green"><strong> ${{ listing.startingBid }}</strong></h5>
-                </div>
-                <hr>
-                <h3 class="card-text">Make a bid:</h3>
-                {% if user.is_authenticated %}
-                    <div>
-                        <div class="input-group mb-3">
-                            <form action="{% url 'listingView' listing.id %}" method="post" style="display: flex">
-                                {% csrf_token %}
-                                <span class="input-group-text">$</span>
-                                <input type="number" class="form-control" name="amount"  value= {{ listing.startingBid|add:"1" }} min="{{ listing.startingBid|add:"1" }}" aria-label="Amount (to the nearest dollar)">
-                                <span class="input-group-text">.00</span>
-                                <input type="submit" name="func" value="Bid" class="btn btn-primary">
-                            </form>
+        <div>
+            <div class="card view-page-child description mr-5">
+                <div class="card-body">
+                    <h5 class="card-title">Description</h5>
+                    <p class="card-text">{{ listing.description }}</p>
+                    <br>
+                    <div style="display: flex">
+                        <h5 class="card-title">Current Bid:</h5>
+                        <h5 style="color: green"><strong> ${{ listing.startingBid }}</strong></h5>
+                    </div>
+                    <hr>
+                    <h3 class="card-text">Make a bid:</h3>
+                    {% if user.is_authenticated %}
+                        <div>
+                            <div class="input-group mb-3">
+                                <form action="{% url 'listingView' listing.id %}" method="post" style="display: flex">
+                                    {% csrf_token %}
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" class="form-control" name="amount"  value= {{ listing.startingBid|add:"1" }} min="{{ listing.startingBid|add:"1" }}" aria-label="Amount (to the nearest dollar)">
+                                    <span class="input-group-text">.00</span>
+                                    <input type="submit" name="func" value="Bid" class="btn btn-primary">
+                                </form>
+                            </div>
                         </div>
-                    </div>
-                {% else %}
-                    <div class="alert alert-warning" role="alert">
-                        You must be logged in to bid!
-                    </div>
-                {% endif %}
-                <h5>Current Bids ({{ bidNum }})</h5>
-                <ul>
-                    {% for bid in bids %}
-                        <li>{{ bid.bidder.username }}, bid ${{ bid.amount }}</li>
-                    {% empty %}
-                        <p>No bids yet!</p>
-                    {% endfor %}
-                </ul>
+                    {% else %}
+                        <div class="alert alert-warning" role="alert">
+                            You must be logged in to bid!
+                        </div>
+                    {% endif %}
+                    <h5>Current Bids ({{ bidNum }})</h5>
+                    <ul>
+                        {% for bid in bids %}
+                            <li>{{ bid.bidder.username }}, bid ${{ bid.amount }}</li>
+                        {% empty %}
+                            <p>No bids yet!</p>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            <br>
+            <div class="card view-page-child description mr-5">
+                <div class="card-body">
+                    <div class="form-group">
+                        <form action="{% url 'listingView' listing.id %}" method="post">
+                            <label for="comment"></label><h5>Make a comment:</h5><br>
+                            {% csrf_token %}
+                            {% if user.is_authenticated %}
+                                <textarea class="form-control" id="comment" name="comment" rows="3"></textarea>
+                                <br>
+                                <input type="submit" class="btn btn-primary" name="func" value="Comment">
+                            {% else %}
+                                <div class="alert alert-warning" role="alert">
+                                    You must be logged in to comment!
+                                </div>
+                            {% endif %}
 
-
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
         <br>
     </div>
     <hr>
-    <div class="view-page-child mx-auto">
+    {% if comments %}
+        <div class="card-header">
+            Comments
+        </div>
         {% for comment in comments %}
-            {{ comment.user.username }}: {{ comment.text }}
+            <div class="card">
+                <div class="card-body">
+                    <blockquote class="blockquote mb-0">
+                        <p>{{ comment.text }}</p>
+                        <footer class="blockquote-footer">{{ comment.user.username }}</footer>
+                    </blockquote>
+                </div>
+            </div>
         {% endfor %}
-
-    </div>
-
+    {% else %}
+        <h3 style="padding: 20px;">No comments yet!</h3>
+        <br>
+    {% endif %}
 {% endblock %}

@@ -3,7 +3,7 @@ from django.db import IntegrityError
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-from .models import User, AuctionListing, Bid
+from .models import User, AuctionListing, Bid, Comment
 from django.contrib import messages
 
 
@@ -163,6 +163,15 @@ def listingView(request, listingId):
                 return HttpResponseRedirect(reverse("listingView", kwargs={
                     "listingId": listingId,
                 }))
+        elif postType == "Comment":
+            if request.user.is_authenticated:
+                listing = AuctionListing.objects.get(pk=listingId)
+                currComment = Comment(
+                    text=request.POST["comment"],
+                    user=request.user,
+                    listing=listing,
+                )
+                currComment.save()
 
     listing = AuctionListing.objects.get(pk=listingId)
     bids = listing.bids.all()

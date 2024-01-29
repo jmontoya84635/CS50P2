@@ -12,7 +12,7 @@ class AuctionListing(models.Model):
     active = models.BooleanField(default=True)
     category = models.CharField(max_length=25)
     winner = models.ForeignKey(User, null=True, blank=True, related_name="AuctionsWon", on_delete=models.CASCADE)
-    title = models.CharField(max_length=35)
+    title = models.CharField(max_length=50)
     description = models.CharField(max_length=750)
     url = models.CharField(blank=True, max_length=500)
     category = models.CharField(blank=True, max_length=20)

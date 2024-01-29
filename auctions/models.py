@@ -9,6 +9,9 @@ class User(AbstractUser, models.Model):
 
 class AuctionListing(models.Model):
     id = models.AutoField(primary_key=True)
+    active = models.BooleanField(default=True)
+    category = models.CharField(max_length=25)
+    winner = models.ForeignKey(User, null=True, blank=True, related_name="AuctionsWon", on_delete=models.CASCADE)
     title = models.CharField(max_length=35)
     description = models.CharField(max_length=750)
     url = models.CharField(blank=True, max_length=500)
@@ -34,9 +37,9 @@ class Bid(models.Model):
 
 class Comment(models.Model):
     id = models.AutoField(primary_key=True)
-    text = models.CharField(max_length=250)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="Comment")
-    listing = models.ForeignKey(AuctionListing, on_delete=models.CASCADE, related_name="Comments")
+    text = models.CharField(max_length=500)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="comments")
+    listing = models.ForeignKey(AuctionListing, on_delete=models.CASCADE, related_name="comments")
 
     def __str__(self):
         return f'{self.user} commented {self.text} on {self.listing}'

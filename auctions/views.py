@@ -74,9 +74,11 @@ def createListing(request, username):
         description = request.POST["description"]
         startingBid = int(request.POST["startingBid"])
         image = request.POST["image"]
+        category = request.POST["category"]
 
         listing = AuctionListing(
             title=title,
+            category=category,
             description=description,
             startingBid=startingBid,
             url=image,
@@ -85,7 +87,20 @@ def createListing(request, username):
         listing.save()
         return HttpResponseRedirect(reverse("index"))
 
-    return render(request, "auctions/createListing.html")
+    return render(request, "auctions/createListing.html", {
+        "categories": [
+            "Miscellaneous",
+            "Vehicles",
+            "Property Rentals",
+            "Apparel",
+            "Classifieds",
+            "Electronics",
+            "Entertainment",
+            "Family",
+            "Toys",
+            "Hobbies",
+        ],
+    })
 
 
 def watchlist(request, username):
@@ -156,4 +171,5 @@ def listingView(request, listingId):
         "isAlreadyIn": isAlreadyIn,
         "bidNum": len(bids),
         "bids": bids,
+        "comments": listing.comments.all(),
     })

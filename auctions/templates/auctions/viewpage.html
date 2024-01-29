@@ -66,8 +66,14 @@
 
             </div>
         </div>
+        <br>
     </div>
-
     <hr>
+    <div class="view-page-child mx-auto">
+        {% for comment in comments %}
+            {{ comment.user.username }}: {{ comment.text }}
+        {% endfor %}
+
+    </div>
 
 {% endblock %}

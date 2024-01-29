@@ -25,7 +25,7 @@ class AuctionListing(models.Model):
 class Bid(models.Model):
     id = models.AutoField(primary_key=True)
     amount = models.IntegerField()
-    listing = models.ManyToManyField(AuctionListing, related_name="bids")
+    listing = models.ForeignKey(AuctionListing, on_delete=models.CASCADE, related_name="bids")
     bidder = models.ForeignKey(User, on_delete=models.CASCADE, related_name="bids")
 
     def __str__(self):

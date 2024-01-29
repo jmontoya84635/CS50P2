@@ -135,6 +135,7 @@ def listingView(request, listingId):
                 listing = AuctionListing.objects.get(pk=listingId)
                 if int(request.POST["amount"]) > listing.startingBid:
                     currBid = Bid(
+                        listing=listing,
                         amount=int(request.POST["amount"]),
                         bidder=request.user,
                     )

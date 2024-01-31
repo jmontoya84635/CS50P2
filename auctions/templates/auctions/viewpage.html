@@ -33,18 +33,24 @@
     </div>
     <hr>
     <div class="view-page-flex-container mx-auto">
-        <div class="view-page-child mr-3 ml-5">
+        <div class="view-page-child ml-5">
             <img class="img-thumbnail rounded-5" src="{{ listing.url }}" alt="Image for listing">
         </div>
         <br>
         <div>
-            <div class="card view-page-child description mr-5">
+            <div class="card view-page-child description ml-5 mr-auto">
                 <div class="card-body">
                     <h5 class="card-title">Description</h5>
                     <p class="card-text">{{ listing.description }}</p>
                     <br>
                     <div style="display: flex">
-                        <h5 class="card-title">Current Bid:</h5>
+                        <h5 class="card-title">
+                            {% if listing.active %}
+                                Current Bid:
+                            {% else %}
+                                Winning Bid:
+                            {% endif %}
+                        </h5>
                         <h5 style="color: green"><strong> ${{ listing.startingBid }}</strong></h5>
                     </div>
                     <hr>
@@ -77,12 +83,17 @@
                         </ul>
                     {% else %}
                         <h2 class="card-text" style="color: red">This listing is closed!</h2><br>
-                        <h3 class="card-text"><strong style="color: dodgerblue">{{ listing.winner }}</strong> won this auction with a bid of ${{ listing.startingBid }}</h3>
+                        {% if listing.winner == listing.creator %}
+                            <h3 class="card-text">No one bid on this auction</h3>
+                        {% elif listing.winner == user %}
+                            <h3 class="card-text"><strong style="color: dodgerblue">You</strong> won this auction with a bid of ${{ listing.startingBid }}</h3>
+                        {% else %}
+                            <h3 class="card-text"><strong style="color: dodgerblue">{{ listing.winner }}</strong> won this auction with a bid of ${{ listing.startingBid }}</h3>
+                        {% endif %}
                     {% endif %}
                 </div>
             </div>
-            <br>
-            <div class="card view-page-child description mr-5">
+            <div class="card view-page-child description ml-5 mr-auto">
                 <div class="card-body">
                     <div class="form-group">
                         <form action="{% url 'listingView' listing.id %}" method="post">

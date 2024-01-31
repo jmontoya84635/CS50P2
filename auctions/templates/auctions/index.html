@@ -1,36 +1,4 @@
-{% extends "auctions/layout.html" %}
+{% extends "auctions/listingslayout.html" %}
 {% load static %}
-{% block body %}
-    <h1>Active Listings</h1>
-    <hr>
-    <div class="main-page-flex-container">
-        {% for listing in AuctionListings %}
-            <div class="auction-listing-card card row-space {% if not listing.active %} greyed-out {% endif %}">
-                {% if listing.url == "" %}
-                    <img class="card-img-top" alt="Image for listing" src="{% static 'auctions/no-image.png' %}">
-                {% else %}
-                    <img class="card-img-top" alt="Image for listing" src={{ listing.url }}>
-                {% endif %}
-                <div class="card-body">
-                    <h5 class="card-title card-overflow">{{ listing.title }}</h5>
-                    <p class="card-text card-overflow">{{ listing.description }}</p>
-                    <p> Created by {{ listing.creator.username }} on {{ listing.createdAt }}</p>
-                    {% if listing.active %}
-                        <a href="{% url 'listingView' listingId=listing.id %}" class="btn btn-primary mr-3">Make a bid of ${{ listing.startingBid }}!</a>
-                    {% else %}
-                        <a href="{% url 'listingView' listingId=listing.id %}" class="btn btn-danger mr-3">This auction is closed</a>
-                    {% endif %}
-                </div>
-            </div>
-        {% empty %}
-            <h2>No active listings</h2>
-        {% endfor %}
-    </div>
 
-
-    <br>
-    <hr>
-    <br>
-        <h3 class="text-center">End of results</h3>
-    <br>
-{% endblock %}
+{% block pageName %}Active Listings {% endblock %}

@@ -6,10 +6,24 @@ from django.urls import reverse
 from .models import User, AuctionListing, Bid, Comment
 from django.contrib import messages
 
+categories = [
+    "Miscellaneous",
+    "Vehicles",
+    "Property Rentals",
+    "Apparel",
+    "Classifieds",
+    "Electronics",
+    "Entertainment",
+    "Family",
+    "Toys",
+    "Hobbies",
+]
+
 
 def index(request):
     return render(request, "auctions/index.html", {
-        "AuctionListings": AuctionListing.objects.all()
+        "listings": AuctionListing.objects.all().order_by('?'),
+        "categories": categories,
     })
 
 
@@ -88,18 +102,7 @@ def createListing(request, username):
         return HttpResponseRedirect(reverse("index"))
 
     return render(request, "auctions/createListing.html", {
-        "categories": [
-            "Miscellaneous",
-            "Vehicles",
-            "Property Rentals",
-            "Apparel",
-            "Classifieds",
-            "Electronics",
-            "Entertainment",
-            "Family",
-            "Toys",
-            "Hobbies",
-        ],
+        "categories": categories,
     })
 
 
@@ -111,11 +114,29 @@ def watchlist(request, username):
         return HttpResponseRedirect(reverse("index"))
     return render(request, "auctions/watchlist.html", {
         "listings": request.user.watchlistItems.all(),
+        "categories": categories,
     })
 
 
-def categoryView(request):
-    return render(request, "auctions/category.html")
+def categoryView(request, category):
+    listings = AuctionListing.objects.all().order_by('?')
+    if category != "home":
+        newListings = []
+        for listing in listings:
+            if listing.category.lower() == category.lower():
+                newListings.append(listing)
+        return render(request, "auctions/category.html", {
+            "listings": newListings,
+            "categories": categories,
+            "category": category,
+        })
+    else:
+        listings = []
+    return render(request, "auctions/category.html", {
+        "listings": listings,
+        "categories": categories,
+        "category": category,
+    })
 
 
 def listingView(request, listingId):
@@ -178,13 +199,17 @@ def listingView(request, listingId):
                 listing.active = False
                 bids = listing.bids.all()
                 highestBid = listing.startingBid
-                for bid in bids:
-                    if bid.amount >= highestBid:
-                        currBid = bid
-                if currBid.bidder is None:
-                    currBid.bidder = "No one has won this auction"
+                if len(bids):
+                    for bid in bids:
+                        if bid.amount >= highestBid:
+                            currBid = bid
                 else:
-                    listing.winner = currBid.bidder
+                    currBid = Bid(
+                        amount=listing.startingBid,
+                        listing=listing,
+                        bidder=request.user,
+                    )
+                listing.winner = currBid.bidder
                 listing.save()
 
     listing = AuctionListing.objects.get(pk=listingId)

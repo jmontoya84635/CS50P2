@@ -10,7 +10,6 @@ class User(AbstractUser, models.Model):
 class AuctionListing(models.Model):
     id = models.AutoField(primary_key=True)
     active = models.BooleanField(default=True)
-    category = models.CharField(max_length=25)
     winner = models.ForeignKey(User, null=True, blank=True, related_name="AuctionsWon", on_delete=models.CASCADE)
     title = models.CharField(max_length=50)
     description = models.CharField(max_length=750)
